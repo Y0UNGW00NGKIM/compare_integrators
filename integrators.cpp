@@ -15,22 +15,32 @@ using std::endl;
 // Integration using trapezoid rule 
 // npts : number of points used in calculation (npts>=2)
 double trapez (double (*f)(double x), unsigned npts, double min, double max) {
-  double sum=0.;		 
-
-  // complete your code here
-  
-  return (sum);
-}      
+  double sum = 0.0;
+  if (npts < 2) return 0.0;
+  const double h = (max - min) / (npts - 1);
+  sum = 0.5 * (f(min) + f(max));
+  for (unsigned i = 1; i < npts - 1; ++i)
+    sum += f(min + i * h);
+  return h * sum;
+}   
 
 // Integration using Simpson's rule
-// npts : number of points used in calculation (npts odd, and >=3)
 double simpson (double (*f)(double x), unsigned npts, double min, double max){  
-  double sum=0.;
+  if (npts < 3) return 0.0;
+  // (npts-1) must be even
+  if ( ((npts - 1) % 2) != 0 ) return 0.0;
 
-  // complete your code here
-  
-  return (sum);
-}  
+  const double h = (max - min) / (npts - 1);
+  double s_odd = 0.0, s_even = 0.0;
+
+  for (unsigned i = 1; i < npts - 1; ++i){
+    const double xi = min + i * h;
+    if (i % 2 == 1) s_odd  += f(xi);  
+    else            s_even += f(xi); 
+  }
+  return (h/3.0) * (f(min) + f(max) + 4.0 * s_odd + 2.0 * s_even);
+}
+
 
 // Integration using Gauss's rule, code is based on the Landau text
 // This is not a very good implementation
@@ -161,10 +171,16 @@ void GaussInt::Init(int npoints){
 // once the constants for the n-point rule are calculated
 // the integral is a very simple sum
 double GaussInt::Integ(double (*f)(double x), double a, double b){
-
-  // ### complete code here ###
-  
-  return 0;  // integral of function f
+  const double c1 = 0.5 * (b - a);
+  const double c2 = 0.5 * (b + a);
+  long double acc = 0.0L;
+  for (size_t i = 0; i < weight.size(); ++i){
+    const long double xi = (long double)lroots[i];
+    const long double wi = (long double)weight[i];
+    const long double xmap = (long double)c1 * xi + (long double)c2;
+    acc += wi * (long double)f((double)xmap);
+  }
+  return (double)(c1 * acc);
 }
 
 void GaussInt::PrintWA() const{
@@ -173,3 +189,4 @@ void GaussInt::PrintWA() const{
     cout  << std::setprecision(34) << (long double) weight[i] << "   " << (long double) lroots[i] << endl;
   }
 }
+
