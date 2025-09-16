@@ -14,3 +14,7 @@ clean:
 
 errtable: errtable.cpp integrators.o integrators.hpp gaussrules.hpp
 	 g++ $(CPPFLAGS) -o errtable errtable.cpp integrators.o
+
+osctable: errtable_osc.cpp integrators.o integrators.hpp gaussrules.hpp
+	 g++ $(CPPFLAGS) -o osctable errtable_osc.cpp integrators.o
+
